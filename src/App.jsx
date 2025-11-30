@@ -365,14 +365,16 @@ function App() {
         <div className="gallery-banner top"></div>
         <div className="gallery-marquee">
           <div className="marquee-track">
-            <img src={mathew2Img} alt="Mathew" className="gallery-img" />
-            <img src={mathew4Img} alt="Mathew" className="gallery-img" />
-            <img src={mathew5Img} alt="Mathew" className="gallery-img" />
-            <img src={mathew6Img} alt="Mathew" className="gallery-img" />
-            <img src={mathew2Img} alt="Mathew" className="gallery-img" />
-            <img src={mathew4Img} alt="Mathew" className="gallery-img" />
-            <img src={mathew5Img} alt="Mathew" className="gallery-img" />
-            <img src={mathew6Img} alt="Mathew" className="gallery-img" />
+            <img src={mathew2Img} alt="Mathew" className="gallery-img" loading="eager" />
+            <img src={mathew4Img} alt="Mathew" className="gallery-img" loading="eager" />
+            <img src={mathew5Img} alt="Mathew" className="gallery-img" loading="eager" />
+            <img src={mathew6Img} alt="Mathew" className="gallery-img" loading="eager" />
+          </div>
+          <div className="marquee-track" aria-hidden="true">
+            <img src={mathew2Img} alt="" className="gallery-img" loading="eager" />
+            <img src={mathew4Img} alt="" className="gallery-img" loading="eager" />
+            <img src={mathew5Img} alt="" className="gallery-img" loading="eager" />
+            <img src={mathew6Img} alt="" className="gallery-img" loading="eager" />
           </div>
         </div>
         <div className="gallery-banner bottom cta-banner">

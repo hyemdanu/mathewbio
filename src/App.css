@@ -447,8 +447,10 @@ html {
 .marquee-track {
   display: flex;
   gap: 30px;
-  animation: marquee 20s linear infinite;
   padding: 20px 0;
+  padding-right: 30px;
+  flex-shrink: 0;
+  animation: marquee 20s linear infinite;
   will-change: transform;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -471,7 +473,7 @@ html {
     transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
   }
 }
 
