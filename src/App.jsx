@@ -89,6 +89,7 @@ function useScrollAnimation(threshold = 0.2) {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    const currentRef = ref.current
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsVisible(entry.isIntersecting)
@@ -96,13 +97,13 @@ function useScrollAnimation(threshold = 0.2) {
       { threshold }
     )
 
-    if (ref.current) {
-      observer.observe(ref.current)
+    if (currentRef) {
+      observer.observe(currentRef)
     }
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current)
+      if (currentRef) {
+        observer.unobserve(currentRef)
       }
     }
   }, [threshold])
@@ -191,8 +192,73 @@ function AnimatedHobbyRow({ children, reverse }) {
   )
 }
 
+// Marquee component with consistent speed
+function Marquee({ images }) {
+  const trackRef = useRef(null)
+  const [duration, setDuration] = useState(20)
+
+  useEffect(() => {
+    const calculateDuration = () => {
+      if (trackRef.current) {
+        const trackWidth = trackRef.current.scrollWidth
+        // Pixels per second - adjust this value to change speed
+        const speed = 100
+        const calculatedDuration = trackWidth / speed
+        setDuration(calculatedDuration)
+      }
+    }
+
+    // Wait for images to load before calculating
+    const imgs = trackRef.current?.querySelectorAll('img') || []
+    let loadedCount = 0
+    const totalImages = imgs.length
+
+    const onImageLoad = () => {
+      loadedCount++
+      if (loadedCount >= totalImages) {
+        calculateDuration()
+      }
+    }
+
+    imgs.forEach(img => {
+      if (img.complete) {
+        loadedCount++
+      } else {
+        img.addEventListener('load', onImageLoad)
+      }
+    })
+
+    if (loadedCount >= totalImages) {
+      calculateDuration()
+    }
+
+    window.addEventListener('resize', calculateDuration)
+    return () => {
+      window.removeEventListener('resize', calculateDuration)
+      imgs.forEach(img => img.removeEventListener('load', onImageLoad))
+    }
+  }, [])
+
+  const animationStyle = { animationDuration: `${duration}s` }
+
+  return (
+    <div className="gallery-marquee">
+      <div className="marquee-track" ref={trackRef} style={animationStyle}>
+        {images.map((src, i) => (
+          <img key={i} src={src} alt="Mathew" className="gallery-img" loading="eager" />
+        ))}
+      </div>
+      <div className="marquee-track" aria-hidden="true" style={animationStyle}>
+        {images.map((src, i) => (
+          <img key={i} src={src} alt="" className="gallery-img" loading="eager" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Icon canvas component with enhanced lighting for realistic materials
-function IconCanvas({ IconComponent }) {
+function IconCanvas({ children }) {
   return (
     <div className="icon-canvas-wrapper">
       <Canvas
@@ -219,7 +285,7 @@ function IconCanvas({ IconComponent }) {
         />
 
         <Suspense fallback={null}>
-          <IconComponent />
+          {children}
           <Environment preset="sunset" environmentIntensity={0.3} />
         </Suspense>
       </Canvas>
@@ -316,7 +382,7 @@ function App() {
         {/* Coding - Icon Left, Text Right */}
         <AnimatedHobbyRow reverse={false}>
           <div className="hobby-icon-side">
-            <IconCanvas IconComponent={CodingIcon} />
+            <IconCanvas><CodingIcon /></IconCanvas>
           </div>
           <div className="hobby-text-side">
             <h2 className="hobby-title">Computer Science Student</h2>
@@ -331,7 +397,7 @@ function App() {
         {/* Music - Text Left, Icon Right */}
         <AnimatedHobbyRow reverse={true}>
           <div className="hobby-icon-side">
-            <IconCanvas IconComponent={MusicIcon} />
+            <IconCanvas><MusicIcon /></IconCanvas>
           </div>
           <div className="hobby-text-side">
             <h2 className="hobby-title">Wind Ensemble</h2>
@@ -347,7 +413,7 @@ function App() {
         {/* Fitness - Icon Left, Text Right */}
         <AnimatedHobbyRow reverse={false}>
           <div className="hobby-icon-side">
-            <IconCanvas IconComponent={FitnessIcon} />
+            <IconCanvas><FitnessIcon /></IconCanvas>
           </div>
           <div className="hobby-text-side">
             <h2 className="hobby-title">Fitness Chad</h2>
@@ -363,20 +429,7 @@ function App() {
       {/* Gallery Section - Scrolling Images */}
       <section className="gallery-section">
         <div className="gallery-banner top"></div>
-        <div className="gallery-marquee">
-          <div className="marquee-track">
-            <img src={mathew2Img} alt="Mathew" className="gallery-img" loading="eager" />
-            <img src={mathew4Img} alt="Mathew" className="gallery-img" loading="eager" />
-            <img src={mathew5Img} alt="Mathew" className="gallery-img" loading="eager" />
-            <img src={mathew6Img} alt="Mathew" className="gallery-img" loading="eager" />
-          </div>
-          <div className="marquee-track" aria-hidden="true">
-            <img src={mathew2Img} alt="" className="gallery-img" loading="eager" />
-            <img src={mathew4Img} alt="" className="gallery-img" loading="eager" />
-            <img src={mathew5Img} alt="" className="gallery-img" loading="eager" />
-            <img src={mathew6Img} alt="" className="gallery-img" loading="eager" />
-          </div>
-        </div>
+        <Marquee images={[mathew2Img, mathew4Img, mathew5Img, mathew6Img]} />
         <div className="gallery-banner bottom cta-banner">
           <span className="cta-text">Click here to see more</span>
           <span className="cta-arrow">↓</span>
